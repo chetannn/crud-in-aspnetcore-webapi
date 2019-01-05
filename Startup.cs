@@ -13,46 +13,67 @@ using Microsoft.Extensions.Options;
 using Microsoft.EntityFrameworkCore;
 using PostApi.Data;
 using PostApi.Repository;
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 
 namespace PostApi
 {
-    public class Startup
+  public class Startup
+  {
+    public Startup(IConfiguration configuration)
     {
-        public Startup(IConfiguration configuration)
-        {
-            Configuration = configuration;
-        }
-
-        public IConfiguration Configuration { get; }
-
-        // This method gets called by the runtime. Use this method to add services to the container.
-        public void ConfigureServices(IServiceCollection services)
-        {
-            services.AddMvc().AddJsonOptions(
-                opt => {
-                    opt.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
-                }
-            ).SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
-            services.AddDbContext<AppDbContext>(options => options.UseSqlite("Data Source=blogging.db"));
-            services.AddScoped<IAuthRepository,AuthRepository>();
-
-        }
-
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
-        {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
-            else
-            {
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-                app.UseHsts();
-            }
-
-            // app.UseHttpsRedirection();
-            app.UseMvc();
-        }
+      Configuration = configuration;
     }
+
+    public IConfiguration Configuration { get; }
+
+    // This method gets called by the runtime. Use this method to add services to the container.
+    public void ConfigureServices(IServiceCollection services)
+    {
+      var key = Encoding.ASCII.GetBytes("super secret key");
+      services.AddMvc().AddJsonOptions(
+          opt =>
+          {
+            opt.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
+          }
+      ).SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+      services.AddDbContext<AppDbContext>(options => options.UseSqlite("Data Source=blogging.db"));
+      services.AddScoped<IAuthRepository, AuthRepository>();
+      services.AddCors();
+      services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+      .AddJwtBearer(options =>
+      {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+          ValidateIssuerSigningKey = true,
+          IssuerSigningKey = new SymmetricSecurityKey(key),
+          ValidateIssuer = false,
+          ValidateAudience = false
+        };
+      });
+    }
+
+    // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+    public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+    {
+      if (env.IsDevelopment())
+      {
+        app.UseDeveloperExceptionPage();
+      }
+      else
+      {
+        // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+        app.UseHsts();
+      }
+
+      // app.UseHttpsRedirection();
+      app.UseCors(builder =>
+      builder.AllowAnyHeader()
+      .AllowAnyMethod()
+      .AllowAnyOrigin());
+
+      app.UseMvc();
+    }
+  }
 }
