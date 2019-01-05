@@ -16,4 +16,6 @@
 [x] - Implement Update for post 
 [x] - Implement Delete for post
 [x] - Add Comments for post
+[x] - Add User Register 
+[x] - Add Login Functionality
 
