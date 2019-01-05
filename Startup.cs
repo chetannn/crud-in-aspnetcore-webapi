@@ -12,6 +12,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.EntityFrameworkCore;
 using PostApi.Data;
+using PostApi.Repository;
 
 namespace PostApi
 {
@@ -33,7 +34,7 @@ namespace PostApi
                 }
             ).SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
             services.AddDbContext<AppDbContext>(options => options.UseSqlite("Data Source=blogging.db"));
-            
+            services.AddScoped<IAuthRepository,AuthRepository>();
 
         }
 
