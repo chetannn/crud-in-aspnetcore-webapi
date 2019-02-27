@@ -3,6 +3,7 @@ using PostApi.Data;
 using PostApi.Models;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.EntityFrameworkCore;
 
 namespace PostApi.Controllers
 {
@@ -29,12 +30,13 @@ namespace PostApi.Controllers
 
     }
     [HttpGet]
-    public ActionResult<IEnumerable<Post>> GetPosts()
+    public ActionResult<IEnumerable<Post>> GetPosts(int page = 1, int pageSize = 5)
     {
-      var posts = _context.Posts.ToList();
+      var posts = _context.Posts;
       
+      var entries =  posts.Skip((page- 1) * pageSize).Take(pageSize).ToList();
       if(posts == null) return NotFound();
-      return posts;
+      return entries;
     }
 
     [HttpGet("{id}", Name = "GetPost")]

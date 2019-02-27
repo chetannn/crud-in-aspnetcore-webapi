@@ -40,6 +40,8 @@ namespace PostApi
       ).SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
       services.AddDbContext<AppDbContext>(options => options.UseSqlite("Data Source=blogging.db"));
       services.AddScoped<IAuthRepository, AuthRepository>();
+      services.AddScoped<IUserRepository, UserRepository>();
+      services.AddScoped<IPhotoRepository, PhotoRepository>();
       services.AddCors();
       services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
       .AddJwtBearer(options =>
@@ -68,11 +70,14 @@ namespace PostApi
       }
 
       // app.UseHttpsRedirection();
+      app.UseFileServer();
+
       app.UseCors(builder =>
       builder.AllowAnyHeader()
       .AllowAnyMethod()
       .AllowAnyOrigin());
-
+      
+      app.UseAuthentication();
       app.UseMvc();
     }
   }

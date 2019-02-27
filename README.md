@@ -18,4 +18,5 @@
 [x] - Add Comments for post
 [x] - Add User Register 
 [x] - Add Login Functionality
+[x] - Add Users Controller to Update, Get All and Specific User from database
 
