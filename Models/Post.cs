@@ -12,5 +12,7 @@ namespace PostApi.Models
     public string Title { get; set; }
     public string Content { get; set; }
     public List<Comment> Comments { get; set; }
+
+    public ICollection<PostFavorite> PostFavorites { get; set; }
   }
 }

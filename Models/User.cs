@@ -23,6 +23,7 @@ namespace PostApi.Models
 
     public List<Photo> Photos { get; set; }
 
+    public ICollection<PostFavorite> PostFavorites { get; set; }
     public User()
     {
       Created = DateTime.Now;
